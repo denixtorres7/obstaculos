@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Corredor de obstáculos</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #f4f4f4;
+      font-family: Arial, sans-serif;
+    }
+
+    .contenedor {
+      width: min(900px, 95vw);
+      text-align: center;
+    }
+
+    h1 {
+      margin-bottom: 10px;
+      color: #222;
+    }
+
+    .info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      font-weight: bold;
+      color: #333;
+    }
+
+    .juego {
+      position: relative;
+      width: 100%;
+      height: 300px;
+      overflow: hidden;
+      background: linear-gradient(#dff3ff 0%, #f9f9f9 65%, #ddd 65%, #ccc 100%);
+      border: 4px solid #222;
+      border-radius: 18px;
+    }
+
+    .suelo {
+      position: absolute;
+      bottom: 55px;
+      left: 0;
+      width: 200%;
+      height: 4px;
+      background: repeating-linear-gradient(
+        90deg,
+        #555 0,
+        #555 20px,
+        transparent 20px,
+        transparent 38px
+      );
+      animation: moverSuelo 1s linear infinite;
+    }
+
+    @keyframes moverSuelo {
+      from { transform: translateX(0); }
+      to { transform: translateX(-50%); }
+    }
+
+    .jugador {
+      position: absolute;
+      left: 70px;
+      bottom: 60px;
+      width: 42px;
+      height: 60px;
+      background: #222;
+      border-radius: 16px 16px 8px 8px;
+    }
+
+    .jugador::before {
+      content: "";
+      position: absolute;
+      top: -18px;
+      left: 8px;
+      width: 26px;
+      height: 26px;
+      background: #222;
+      border-radius: 50%;
+    }
+
+    .jugador::after {
+      content: "";
+      position: absolute;
+      bottom: -10px;
+      left: 6px;
+      width: 30px;
+      height: 10px;
+      background: repeating-linear-gradient(
+        90deg,
+        #222 0,
+        #222 10px,
+        transparent 10px,
+        transparent 20px
+      );
+    }
+
+    .obstaculo {
+      position: absolute;
+      right: -40px;
+      bottom: 60px;
+      width: 35px;
+      height: 55px;
+      background: #e63946;
+      border-radius: 6px;
+    }
+
+    .obstaculo.bajo {
+      height: 32px;
+      width: 55px;
+      background: #ff9f1c;
+    }
+
+    .mensaje {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.75);
+      color: #222;
+      font-size: 1.3rem;
+      padding: 20px;
+    }
+
+    .mensaje.oculto {
+      display: none;
+    }
+
+    button {
+      margin-top: 12px;
+      padding: 10px 18px;
+      border: none;
+      border-radius: 12px;
+      background: #222;
+      color: white;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #444;
+    }
+
+    .ayuda {
+      margin-top: 10px;
+      color: #555;
+      font-size: 0.95rem;
+    }
+  </style>
+</head>
+<body>
+  <main class="contenedor">
+    <h1>Corredor de obstáculos</h1>
+
+    <div class="info">
+      <span>Puntaje: <span id="puntaje">0</span></span>
+      <span>Récord: <span id="record">0</span></span>
+    </div>
+
+    <section class="juego" id="juego">
+      <div class="suelo" id="suelo"></div>
+      <div class="jugador" id="jugador"></div>
+      <div class="mensaje" id="mensaje">
+        <strong>Presiona espacio, ↑ o toca la pantalla para saltar</strong>
+        <button id="btnInicio">Iniciar juego</button>
+      </div>
+    </section>
+
+    <p class="ayuda">Controles: barra espaciadora, flecha arriba o toque en pantalla.</p>
+  </main>
+
+  <script>
+    const juego = document.getElementById("juego");
+    const jugador = document.getElementById("jugador");
+    const mensaje = document.getElementById("mensaje");
+    const btnInicio = document.getElementById("btnInicio");
+    const puntajeTexto = document.getElementById("puntaje");
+    const recordTexto = document.getElementById("record");
+    const suelo = document.getElementById("suelo");
+
+    let jugando = false;
+    let perdio = false;
+    let saltando = false;
+    let velocidad = 6;
+    let gravedad = 0.8;
+    let impulsoSalto = 16;
+    let velocidadVertical = 0;
+    let posicionY = 0;
+    let puntaje = 0;
+    let record = Number(localStorage.getItem("recordCorredor")) || 0;
+    let obstaculos = [];
+    let intervaloObstaculos;
+    let animacion;
+
+    recordTexto.textContent = record;
+
+    function iniciarJuego() {
+      jugando = true;
+      perdio = false;
+      saltando = false;
+      velocidad = 6;
+      velocidadVertical = 0;
+      posicionY = 0;
+      puntaje = 0;
+      obstaculos.forEach(obstaculo => obstaculo.elemento.remove());
+      obstaculos = [];
+      puntajeTexto.textContent = puntaje;
+      mensaje.classList.add("oculto");
+      suelo.style.animationPlayState = "running";
+
+      clearInterval(intervaloObstaculos);
+      intervaloObstaculos = setInterval(crearObstaculo, 1300);
+
+      cancelarAnimacion();
+      bucleJuego();
+    }
+
+    function cancelarAnimacion() {
+      if (animacion) cancelAnimationFrame(animacion);
+    }
+
+    function saltar() {
+      if (!jugando || perdio) {
+        iniciarJuego();
+        return;
+      }
+
+      if (!saltando) {
+        saltando = true;
+        velocidadVertical = impulsoSalto;
+      }
+    }
+
+    function crearObstaculo() {
+      if (!jugando || perdio) return;
+
+      const elemento = document.createElement("div");
+      const esBajo = Math.random() > 0.55;
+      elemento.className = esBajo ? "obstaculo bajo" : "obstaculo";
+      juego.appendChild(elemento);
+
+      obstaculos.push({
+        elemento,
+        x: juego.clientWidth + 40,
+        pasado: false
+      });
+    }
+
+    function actualizarJugador() {
+      if (saltando) {
+        posicionY += velocidadVertical;
+        velocidadVertical -= gravedad;
+
+        if (posicionY <= 0) {
+          posicionY = 0;
+          saltando = false;
+          velocidadVertical = 0;
+        }
+      }
+
+      jugador.style.bottom = `${60 + posicionY}px`;
+    }
+
+    function actualizarObstaculos() {
+      obstaculos.forEach((obstaculo, index) => {
+        obstaculo.x -= velocidad;
+        obstaculo.elemento.style.left = `${obstaculo.x}px`;
+
+        if (!obstaculo.pasado && obstaculo.x + obstaculo.elemento.offsetWidth < 70) {
+          obstaculo.pasado = true;
+          puntaje += 10;
+          puntajeTexto.textContent = puntaje;
+
+          if (puntaje % 50 === 0) {
+            velocidad += 0.6;
+          }
+        }
+
+        if (obstaculo.x < -80) {
+          obstaculo.elemento.remove();
+          obstaculos.splice(index, 1);
+        }
+      });
+    }
+
+    function detectarColision() {
+      const rectJugador = jugador.getBoundingClientRect();
+
+      for (const obstaculo of obstaculos) {
+        const rectObstaculo = obstaculo.elemento.getBoundingClientRect();
+
+        const colision =
+          rectJugador.left < rectObstaculo.right &&
+          rectJugador.right > rectObstaculo.left &&
+          rectJugador.top < rectObstaculo.bottom &&
+          rectJugador.bottom > rectObstaculo.top;
+
+        if (colision) {
+          terminarJuego();
+          break;
+        }
+      }
+    }
+
+    function terminarJuego() {
+      jugando = false;
+      perdio = true;
+      clearInterval(intervaloObstaculos);
+      suelo.style.animationPlayState = "paused";
+
+      if (puntaje > record) {
+        record = puntaje;
+        localStorage.setItem("recordCorredor", record);
+        recordTexto.textContent = record;
+      }
+
+      mensaje.innerHTML = `
+        <strong>Juego terminado</strong>
+        <p>Puntaje final: ${puntaje}</p>
+        <button id="btnReinicio">Jugar de nuevo</button>
+      `;
+      mensaje.classList.remove("oculto");
+      document.getElementById("btnReinicio").addEventListener("click", iniciarJuego);
+    }
+
+    function bucleJuego() {
+      if (!jugando) return;
+
+      actualizarJugador();
+      actualizarObstaculos();
+      detectarColision();
+
+      animacion = requestAnimationFrame(bucleJuego);
+    }
+
+    document.addEventListener("keydown", (evento) => {
+      if (evento.code === "Space" || evento.code === "ArrowUp") {
+        evento.preventDefault();
+        saltar();
+      }
+    });
+
+    juego.addEventListener("click", saltar);
+    juego.addEventListener("touchstart", saltar);
+    btnInicio.addEventListener("click", iniciarJuego);
+  </script>
+</body>
+</html>
