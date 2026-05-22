@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Corredor de obstáculos</title>
+  <title>Corredora de obstáculos</title>
+
   <style>
     * {
       box-sizing: border-box;
@@ -12,163 +13,343 @@
     }
 
     body {
-      background: #f1f1f1;
+      background: #111;
       min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
       font-family: Arial, sans-serif;
+      overflow: hidden;
     }
 
     .contenedor {
-      width: min(900px, 95vw);
-    }
-
-    h1 {
-      text-align: center;
-      margin-bottom: 10px;
+      width: 2436px;
+      max-width: 100vw;
+      margin: auto;
     }
 
     .info {
+      position: absolute;
+      z-index: 20;
+      top: 25px;
+      left: 40px;
+      right: 40px;
       display: flex;
       justify-content: space-between;
-      margin-bottom: 10px;
+      color: white;
+      font-size: 36px;
       font-weight: bold;
+      text-shadow: 3px 3px 0 #000;
     }
 
     .juego {
       position: relative;
-      width: 100%;
-      height: 280px;
+      width: 2436px;
+      height: 1125px;
+      max-width: 100vw;
+      max-height: 100vh;
       overflow: hidden;
-      border: 4px solid #222;
-      border-radius: 16px;
-      background: #87ceeb;
-      transition: background 1s;
+      background-image: url("fondo.png");
+      background-size: cover;
+      background-repeat: repeat-x;
+      background-position: 0 bottom;
+      animation: moverFondo 18s linear infinite;
     }
 
-    .juego.bosque {
-      background: #98d67b;
+    @keyframes moverFondo {
+      from {
+        background-position: 0 bottom;
+      }
+
+      to {
+        background-position: -2436px bottom;
+      }
     }
 
-    .juego.nieve {
-      background: #dff4ff;
+    .juego.pausado {
+      animation-play-state: paused;
     }
 
-    .suelo {
-      position: absolute;
-      bottom: 50px;
-      width: 200%;
-      height: 4px;
-      background: repeating-linear-gradient(
-        90deg,
-        #444 0,
-        #444 20px,
-        transparent 20px,
-        transparent 40px
-      );
-      animation: moverSuelo 1s linear infinite;
-    }
+    .jugador{
+      position:absolute;
+      left:260px;
+      bottom:165px;
 
-    @keyframes moverSuelo {
-      from { transform: translateX(0); }
-      to { transform: translateX(-50%); }
-    }
+      width:90px;
+      height:140px;
 
-    .jugador {
-      position: absolute;
-      left: 70px;
-      bottom: 54px;
-      width: 42px;
-      height: 62px;
-    }
+      z-index:10;
 
-    .cabeza {
-      position: absolute;
-      width: 28px;
-      height: 28px;
+      animation:rebote .25s infinite alternate;
+}
+
+@keyframes rebote{
+
+   from{
+      transform:translateY(0px);
+   }
+
+   to{
+      transform:translateY(-6px);
+   }
+
+}
+
+    .cabeza{
+        position:absolute;
+
+      width:55px;
+      height:55px;
       background: #ffd166;
-      border: 3px solid #222;
-      border-radius: 6px;
-      left: 7px;
-      top: 0;
+      border-radius: 18px;
+      left:25px;
+      border:5px solid #000;
+      top: 35;
+      transform:rotate(18deg);
+      
     }
 
-    .cabello {
-      position: absolute;
-      width: 30px;
-      height: 10px;
-      background: #5a3825;
-      top: -5px;
-      left: -4px;
-      border-radius: 8px;
+.cabello{
+  position:absolute;
+  width:50px;
+  height:18px;
+  background:#5a3825;
+  top:-8px;
+  left:2px;
+  border-radius:20px;
+  border:3px solid #000;
+}
+
+.cabello::before{
+  content:"";
+  position:absolute;
+  width:24px;
+  height:24px;
+  background:#5a3825;
+  border:3px solid #000;
+  border-radius:50%;
+  left:-22px;
+  top:10px;
+}
+
+.cabello::after{
+  content:"";
+  position:absolute;
+  width:8px;
+  height:8px;
+  background:#ff4d6d;
+  border-radius:50%;
+  left:-10px;
+  top:19px;
+}
+
+    .ojo{
+
+      position:absolute;
+
+      width:8px;
+      height:8px;
+
+      background:#000;
+
+      border-radius:50%;
+
+      right:5px;
+      top:20px;
     }
 
-    .cuerpo {
-      position: absolute;
-      width: 36px;
-      height: 26px;
-      background: #ff4d6d;
-      border: 3px solid #222;
-      left: 3px;
-      top: 26px;
-      border-radius: 4px;
+.cuerpo{
+  position:absolute;
+  width:60px;
+  height:45px;
+  background:#ff4d6d;
+  border:5px solid #000;
+  left:5px;
+  top:53px;
+  border-radius:12px;
+  overflow:visible;
+  transform:rotate(18deg);
+}    
+
+.pierna{
+
+    position:absolute;
+
+    width:18px;
+    height:45px;
+
+    background:#6a4c93;
+
+    border:4px solid #000;
+
+    border-radius:8px;
+
+    top:85px;
+
+    transform-origin:top center;
+}
+
+
+/* pierna atrás */
+
+.piernaAtras{
+
+    left:20px;
+
+    z-index:1;
+
+    opacity:.55;
+
+    animation:piernaAtras .25s infinite alternate;
+}
+
+
+/* pierna delante */
+
+.piernaFrente{
+
+    left:20px;
+
+    z-index:12;
+
+    animation:piernaFrente .25s infinite alternate;
+}
+
+
+@keyframes piernaFrente{
+
+    from{
+
+        transform:
+        rotate(-50deg);
+
     }
 
-    .pierna {
-      position: absolute;
-      width: 10px;
-      height: 20px;
-      background: #6a4c93;
-      border: 2px solid #222;
-      top: 50px;
-      animation: correr 0.25s infinite alternate;
-      transform-origin: top center;
+    to{
+
+        transform:
+        rotate(35deg);
+
     }
 
-    .pierna1 {
-      left: 8px;
+}
+
+
+@keyframes piernaAtras{
+
+    from{
+
+        transform:
+        rotate(35deg);
+
     }
 
-    .pierna2 {
-      left: 24px;
-      animation-delay: 0.12s;
+    to{
+
+        transform:
+        rotate(-50deg);
+
     }
 
-    @keyframes correr {
-      from { transform: rotate(18deg); }
-      to { transform: rotate(-18deg); }
-    }
+}
 
-    .jugador.agachado {
-      height: 42px;
-    }
+    .brazo{
 
-    .jugador.agachado .pierna {
-      animation: none;
-      transform: rotate(90deg);
-      top: 40px;
-    }
+    position:absolute;
+
+    width:14px;
+    height:35px;
+
+    background:#ffd166;
+
+    border:4px solid #000;
+
+    border-radius:10px;
+
+    transform-origin:top center;
+
+    animation:brazos .25s infinite alternate;
+}
+
+
+/* brazo atrás */
+
+.brazoAtras{
+
+   left:5px;
+
+   top:5px;
+
+
+   z-index:20;
+
+   animation-delay:.12s;
+}
+
+
+/* brazo adelante */
+
+.brazoFrente{
+
+   right:5px;
+
+   top:10px;
+  opacity:.0;
+
+
+   z-index:1;
+}
+
+
+@keyframes brazos{
+
+from{
+
+   transform:rotate(55deg);
+
+}
+
+to{
+
+   transform:rotate(-55deg);
+
+}
+
+}
 
     .obstaculo {
       position: absolute;
-      bottom: 54px;
-      width: 30px;
-      height: 50px;
-      background: #00b4d8;
-      border: 3px solid #222;
-      border-radius: 4px;
+      bottom: 168px;
+      width: 260px;
+      height: 200px;
+      background-image: url("Obstaculo 2.png");
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center bottom;
+      z-index: 8;
+    }
+
+    .obstaculo.hueco {
+      bottom: 40px;
+      width: 330px;
+      height: 180px;
+      background-image: url("Obstaculo 1.png");
     }
 
     .mensaje {
       position: absolute;
       inset: 0;
+      z-index: 30;
       display: flex;
       justify-content: center;
       align-items: center;
       flex-direction: column;
-      background: rgba(255,255,255,0.7);
-      gap: 10px;
+      gap: 28px;
+      background: rgba(0, 0, 0, 0.45);
+      color: white;
+      text-align: center;
+      font-size: 42px;
+      text-shadow: 3px 3px 0 #000;
     }
 
     .oculto {
@@ -176,34 +357,55 @@
     }
 
     button {
-      padding: 10px 18px;
-      border: none;
-      border-radius: 10px;
-      background: #222;
-      color: white;
+      padding: 24px 42px;
+      border: 6px solid #000;
+      border-radius: 18px;
+      background: #ffd166;
+      color: #000;
       cursor: pointer;
+      font-size: 34px;
+      font-weight: bold;
+    }
+
+    button:hover {
+      background: #ffb703;
+    }
+
+    .ayuda {
+      position: absolute;
+      bottom: 25px;
+      left: 40px;
+      z-index: 20;
+      color: white;
+      font-size: 28px;
+      text-shadow: 3px 3px 0 #000;
     }
   </style>
 </head>
+
 <body>
   <main class="contenedor">
-    <h1>Corredora de obstáculos</h1>
-
     <div class="info">
       <span>Puntaje: <span id="puntaje">0</span></span>
+      <span>Nivel: <span id="nivel">1</span></span>
+      <span>Vidas: <span id="vidas">3</span></span>
       <span>Récord: <span id="record">0</span></span>
     </div>
 
-    <section class="juego" id="juego">
-      <div class="suelo" id="suelo"></div>
+    <section class="juego pausado" id="juego">
       <div class="jugador" id="jugador">
         <div class="cabeza">
-          <div class="cabello"></div>
-        </div>
-        <div class="cuerpo"></div>
-        <div class="pierna pierna1"></div>
-        <div class="pierna pierna2"></div>
+        <div class="cabello"></div>
+        <div class="ojo"></div>
       </div>
+        <div class="cuerpo">
+        <div class="brazo brazoAtras"></div>
+        <div class="brazo brazoFrente"></div>
+      </div>
+      <div class="pierna piernaFrente"></div>
+      <div class="pierna piernaAtras"></div>
+      </div>
+
       <div class="mensaje" id="mensaje">
         <strong>Presiona espacio, ↑ o toca la pantalla para saltar</strong>
         <button id="btnInicio">Iniciar juego</button>
@@ -220,21 +422,30 @@
     const btnInicio = document.getElementById("btnInicio");
     const puntajeTexto = document.getElementById("puntaje");
     const recordTexto = document.getElementById("record");
-    const suelo = document.getElementById("suelo");
+    const vidasTexto = document.getElementById("vidas");
+    const nivelTexto = document.getElementById("nivel");
 
     let jugando = false;
     let perdio = false;
     let saltando = false;
-    let velocidad = 6;
-    let gravedad = 0.8;
-    let impulsoSalto = 16;
+
+    let velocidad = 11;
+    let gravedad = 0.85;
+    let impulsoSalto = 30;
     let velocidadVertical = 0;
     let posicionY = 0;
+
     let puntaje = 0;
     let record = Number(localStorage.getItem("recordCorredor")) || 0;
+
     let obstaculos = [];
     let intervaloObstaculos;
     let animacion;
+    let vidas = 3;
+    let nivel = 1;
+    let invulnerable = false;
+
+    const pisoJugador = 180;
 
     recordTexto.textContent = record;
 
@@ -242,26 +453,36 @@
       jugando = true;
       perdio = false;
       saltando = false;
-      velocidad = 6;
+      vidas = 3;
+      nivel = 1;
+      vidasTexto.textContent = vidas;
+      nivelTexto.textContent = nivel;
+
+      velocidad = 11;
       velocidadVertical = 0;
       posicionY = 0;
       puntaje = 0;
+
+      puntajeTexto.textContent = puntaje;
+      jugador.style.bottom = pisoJugador + "px";
+
       obstaculos.forEach(obstaculo => obstaculo.elemento.remove());
       obstaculos = [];
-      puntajeTexto.textContent = puntaje;
-          cambiarFondo();
+
       mensaje.classList.add("oculto");
-      suelo.style.animationPlayState = "running";
+      juego.classList.remove("pausado");
 
       clearInterval(intervaloObstaculos);
-      intervaloObstaculos = setInterval(crearObstaculo, 1300);
+      intervaloObstaculos = setInterval(crearObstaculo, 2300);
 
       cancelarAnimacion();
       bucleJuego();
     }
 
     function cancelarAnimacion() {
-      if (animacion) cancelAnimationFrame(animacion);
+      if (animacion) {
+        cancelAnimationFrame(animacion);
+      }
     }
 
     function saltar() {
@@ -280,14 +501,17 @@
       if (!jugando || perdio) return;
 
       const elemento = document.createElement("div");
-      const esBajo = Math.random() > 0.55;
-      elemento.className = esBajo ? "obstaculo bajo" : "obstaculo";
+      const esHueco = Math.random() > 0.5;
+
+      elemento.className = esHueco ? "obstaculo hueco" : "obstaculo";
+
       juego.appendChild(elemento);
 
       obstaculos.push({
-        elemento,
-        x: juego.clientWidth + 40,
-        pasado: false
+        elemento: elemento,
+        x: juego.clientWidth + 300,
+        pasado: false,
+        tipo: esHueco ? "hueco" : "normal"
       });
     }
 
@@ -303,19 +527,7 @@
         }
       }
 
-      jugador.style.bottom = `${60 + posicionY}px`;
-    }
-
-    function cambiarFondo() {
-      juego.classList.remove("bosque", "nieve");
-
-      if (puntaje >= 100 && puntaje < 200) {
-        juego.classList.add("bosque");
-      }
-
-      if (puntaje >= 200) {
-        juego.classList.add("nieve");
-      }
+      jugador.style.bottom = `${pisoJugador + posicionY}px`;
     }
 
     function actualizarObstaculos() {
@@ -323,39 +535,77 @@
         obstaculo.x -= velocidad;
         obstaculo.elemento.style.left = `${obstaculo.x}px`;
 
-        if (!obstaculo.pasado && obstaculo.x + obstaculo.elemento.offsetWidth < 70) {
+        if (!obstaculo.pasado && obstaculo.x + obstaculo.elemento.offsetWidth < 220) {
           obstaculo.pasado = true;
           puntaje += 10;
           puntajeTexto.textContent = puntaje;
-          cambiarFondo();
+          nivel = Math.floor(puntaje / 100) + 1;
+          nivelTexto.textContent = nivel;
 
-          if (puntaje % 50 === 0) {
-            velocidad += 0.6;
+          if (puntaje % 100 === 0) {
+            velocidad += 0.8;
           }
         }
 
-        if (obstaculo.x < -80) {
+        if (obstaculo.x < -400) {
           obstaculo.elemento.remove();
           obstaculos.splice(index, 1);
         }
       });
     }
 
+    function perderVida(obstaculo) {
+  if (invulnerable) return;
+
+  vidas--;
+  vidasTexto.textContent = vidas;
+
+  invulnerable = true;
+  jugador.style.opacity = "0.45";
+
+  if (obstaculo) {
+    obstaculo.elemento.remove();
+    obstaculos = obstaculos.filter(o => o !== obstaculo);
+  }
+
+  setTimeout(() => {
+    invulnerable = false;
+    jugador.style.opacity = "1";
+  }, 1200);
+
+  if (vidas <= 0) {
+    terminarJuego();
+  }
+}
+
     function detectarColision() {
       const rectJugador = jugador.getBoundingClientRect();
 
       for (const obstaculo of obstaculos) {
-        const rectObstaculo = obstaculo.elemento.getBoundingClientRect();
+        const rectObs = obstaculo.elemento.getBoundingClientRect();
 
-        const colision =
-          rectJugador.left < rectObstaculo.right &&
-          rectJugador.right > rectObstaculo.left &&
-          rectJugador.top < rectObstaculo.bottom &&
-          rectJugador.bottom > rectObstaculo.top;
+        if (obstaculo.tipo === "normal") {
+          const colision =
+            rectJugador.left < rectObs.right - 30 &&
+            rectJugador.right > rectObs.left + 30 &&
+            rectJugador.top < rectObs.bottom - 20 &&
+            rectJugador.bottom > rectObs.top + 20;
 
-        if (colision) {
-          terminarJuego();
-          break;
+          if (colision) {
+            perderVida(obstaculo);
+            break;
+          }
+        }
+
+        if (obstaculo.tipo === "hueco") {
+          const sobreHueco =
+            rectJugador.right > rectObs.left + 140 &&
+            rectJugador.left < rectObs.right - 140;
+
+          if (sobreHueco && posicionY < 45) {
+            perderVida(obstaculo);
+            break;
+          }
         }
       }
     }
@@ -363,8 +613,9 @@
     function terminarJuego() {
       jugando = false;
       perdio = true;
+
       clearInterval(intervaloObstaculos);
-      suelo.style.animationPlayState = "paused";
+      juego.classList.add("pausado");
 
       if (puntaje > record) {
         record = puntaje;
@@ -372,13 +623,19 @@
         recordTexto.textContent = record;
       }
 
-      mensaje.innerHTML = `
-        <strong>Juego terminado</strong>
-        <p>Puntaje final: ${puntaje}</p>
-        <button id="btnReinicio">Jugar de nuevo</button>
-      `;
+        mensaje.innerHTML = `
+    <strong style="font-size:80px;">FIN DEL JUEGO</strong>
+    <p>Puntaje final: ${puntaje}</p>
+    <p>Nivel alcanzado: ${nivel}</p>
+    <button id="btnReinicio">Jugar de nuevo</button>
+  `;
+
+
       mensaje.classList.remove("oculto");
-      document.getElementById("btnReinicio").addEventListener("click", iniciarJuego);
+
+      document
+        .getElementById("btnReinicio")
+        .addEventListener("click", iniciarJuego);
     }
 
     function bucleJuego() {
@@ -391,25 +648,16 @@
       animacion = requestAnimationFrame(bucleJuego);
     }
 
-    document.addEventListener("keydown", (evento) => {
+    document.addEventListener("keydown", evento => {
       if (evento.code === "Space" || evento.code === "ArrowUp") {
         evento.preventDefault();
         saltar();
-      }
-
-      if (evento.code === "ArrowDown") {
-        jugador.classList.add("agachado");
-      }
-    });
-
-    document.addEventListener("keyup", (evento) => {
-      if (evento.code === "ArrowDown") {
-        jugador.classList.remove("agachado");
       }
     });
 
     juego.addEventListener("click", saltar);
     juego.addEventListener("touchstart", saltar);
+
     btnInicio.addEventListener("click", iniciarJuego);
   </script>
 </body>
